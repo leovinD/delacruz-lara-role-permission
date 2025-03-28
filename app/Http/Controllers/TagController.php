@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TagController extends Controller
 {
@@ -12,7 +13,8 @@ class TagController extends Controller
      */
     public function index()
     {
-        return view('posts.tag.index');
+        $tags = Tag::latest()->paginate(10);
+        return view('posts.tag.index', compact('tags'));
     }
 
     /**
@@ -20,7 +22,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.tag.create');
     }
 
     /**
@@ -28,7 +30,18 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'tag_name' => 'required|unique:tags,tag_name|max:255',
+            'tag_desc' => 'nullable|string'
+        ]);
+
+        Tag::create([
+            'tag_name' => $request->tag_name,
+            'tag_slug' => Str::slug($request->tag_name),
+            'tag_desc' => $request->tag_desc,
+        ]);
+
+        return redirect()->route('tags.index')->with('success', 'Tag created successfully.');
     }
 
     /**
@@ -36,7 +49,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        //
+        return view('posts.tag.show', compact('tag'));
     }
 
     /**
@@ -44,7 +57,7 @@ class TagController extends Controller
      */
     public function edit(Tag $tag)
     {
-        //
+        return view('posts.tag.edit', compact('tag'));
     }
 
     /**
@@ -52,7 +65,18 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        //
+        $request->validate([
+            'tag_name' => 'required|max:255|unique:tags,tag_name,' . $tag->id,
+            'tag_desc' => 'nullable|string'
+        ]);
+
+        $tag->update([
+            'tag_name' => $request->tag_name,
+            'tag_slug' => Str::slug($request->tag_name),
+            'tag_desc' => $request->tag_desc,
+        ]);
+
+        return redirect()->route('tags.index')->with('success', 'Tag updated successfully.');
     }
 
     /**
@@ -60,6 +84,14 @@ class TagController extends Controller
      */
     public function destroy(Tag $tag)
     {
-        //
+        $tag->delete();
+        return redirect()->route('tags.index')->with('success', 'Tag deleted successfully.');
     }
 }
+
+
+
+
+
+
+

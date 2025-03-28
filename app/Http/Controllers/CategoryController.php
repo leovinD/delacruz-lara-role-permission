@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -12,7 +13,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return view('posts.category.index');
+        $categories = Category::latest()->paginate(10);
+        return view('posts.category.index', compact('categories'));
     }
 
     /**
@@ -20,7 +22,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.category.create');
     }
 
     /**
@@ -28,7 +30,18 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cat_name' => 'required|unique:categories,cat_name|max:255',
+            'cat_desc' => 'nullable|string'
+        ]);
+
+        Category::create([
+            'cat_name' => $request->cat_name,
+            'cat_slug' => Str::slug($request->cat_name),
+            'cat_desc' => $request->cat_desc,
+        ]);
+
+        return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }
 
     /**
@@ -36,7 +49,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        return view('posts.category.show', compact('category'));
     }
 
     /**
@@ -44,7 +57,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('posts.category.edit', compact('category'));
     }
 
     /**
@@ -52,7 +65,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'cat_name' => 'required|max:255|unique:categories,cat_name,' . $category->id,
+            'cat_desc' => 'nullable|string'
+        ]);
+
+        $category->update([
+            'cat_name' => $request->cat_name,
+            'cat_slug' => Str::slug($request->cat_name),
+            'cat_desc' => $request->cat_desc,
+        ]);
+
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     /**
@@ -60,6 +84,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
 }
+
+
+

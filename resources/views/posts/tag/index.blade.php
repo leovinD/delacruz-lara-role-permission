@@ -39,6 +39,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ Str::limit($tag->tag_desc, 50) }}</td>
                                             <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                                 <div class="flex justify-end space-x-2">
+                                                    <a href="{{ route('tags.show', $tag) }}" class="text-blue-500 hover:text-blue-700">View</a>
                                                     <a href="{{ route('tags.edit', $tag) }}" class="text-yellow-500 hover:text-yellow-700">Edit</a>
                                                     <form action="{{ route('tags.destroy', $tag) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                                         @csrf

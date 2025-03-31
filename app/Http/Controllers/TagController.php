@@ -87,6 +87,9 @@ class TagController extends Controller
         $tag->delete();
         return redirect()->route('tags.index')->with('success', 'Tag deleted successfully.');
     }
+<<<<<<< HEAD
+}
+=======
 }
 
 
@@ -95,3 +98,4 @@ class TagController extends Controller
 
 
 
+>>>>>>> f3d27d2b564292000d192cbc02b99b7939146628

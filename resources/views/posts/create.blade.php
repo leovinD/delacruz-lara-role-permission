@@ -33,6 +33,21 @@
                         </div>
 
                         <div class="mb-4">
+                            <x-input-label :value="__('Select Category')" />
+                            <div class="mt-2">
+                                @foreach ($categories as $category)
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="categories[]" value="{{ $category->id }}"
+                                            class="text-indigo-600 border-gray-300 rounded shadow-sm focus:ring-indigo-500"
+                                            {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }} />
+                                        <span class="ml-2">{{ $category->cat_name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <x-input-error class="mt-2" :messages="$errors->get('categories')" />
+                        </div>
+
+                        <div class="mb-4">
                             <label class="inline-flex items-center">
                                 <input type="checkbox" name="is_published"
                                     class="text-indigo-600 border-gray-300 rounded shadow-sm focus:ring-indigo-500"

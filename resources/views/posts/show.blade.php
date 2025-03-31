@@ -38,6 +38,22 @@
                         {!! $post->content !!}
                     </div>
 
+                    <!-- Display Categories -->
+                    <div class="mt-6">
+                        <strong>Categories:</strong>
+                        @if($post->categories->isNotEmpty())
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @foreach($post->categories as $category)
+                                    <span class="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md">
+                                        {{ $category->cat_name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-500">No categories assigned.</p>
+                        @endif
+                    </div>
+
                     <div class="pt-4 mt-6 text-gray-600 border-t">
                         <div class="flex items-center justify-between">
                             <div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Storage;
 use App\Models\Post;
+use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,7 +24,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('author')
+        $posts = Post::with('author', 'categories') // Load categories
             ->published()
             ->latest('published_at')
             ->paginate(10);
@@ -36,7 +37,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $categories = Category::all(); // Fetch all categories
+        return view('posts.create', compact('categories'));
     }
 
     /**
@@ -48,18 +50,18 @@ class PostController extends Controller
             'is_published' => $request->has('is_published') ? 1 : 0
         ]);
 
-         // Sanitize and validate input
-         $validatedData = $request->validate([
+        // Sanitize and validate input
+        $validatedData = $request->validate([
             'title' => 'required|max:255|unique:posts,title',
             'content' => 'required|max:65535',
             'ft_image' => 'nullable|max:2048|image|mimes:jpeg,png,jpg',
-            'is_published' => 'boolean'
-
+            'is_published' => 'boolean',
+            'categories' => 'nullable|array', // Validate categories
+            'categories.*' => 'exists:categories,id' // Ensure each category exists
         ]);
 
         // Sanitize content
         $sanitizedContent = strip_tags($validatedData['content'], '<p><a><strong><em><h1><h2><h3><h4><h5><h6><ul><ol><li>');
-
 
         // Handle file upload
         $imagePath = null;
@@ -85,6 +87,11 @@ class PostController extends Controller
 
         $post->save();
 
+        // Attach categories
+        if ($request->has('categories')) {
+            $post->categories()->attach($request->categories);
+        }
+
         return redirect()->route('posts.index')
             ->with('success', 'Post created successfully.');
     }
@@ -94,7 +101,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        // Only show published posts or posts sang author
+        // Only show published posts or posts of the author
         if (!$post->is_published && $post->user_id !== Auth::id()) {
             abort(403);
         }
@@ -107,8 +114,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-
-         return view('posts.edit', compact('post'));
+        $categories = Category::all(); // Fetch all categories
+        return view('posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -119,7 +126,6 @@ class PostController extends Controller
         $request->merge([
             'is_published' => $request->has('is_published') ? 1 : 0
         ]);
-
 
         // Validate input
         $validatedData = $request->validate([
@@ -140,7 +146,9 @@ class PostController extends Controller
                 'mimes:jpeg,png,jpg,gif',
                 'max:2048'
             ],
-            'is_published' => 'boolean'
+            'is_published' => 'boolean',
+            'categories' => 'nullable|array', // Validate categories
+            'categories.*' => 'exists:categories,id' // Ensure each category exists
         ]);
 
         // Sanitize content
@@ -175,6 +183,13 @@ class PostController extends Controller
 
         $post->save();
 
+        // Sync categories
+        if ($request->has('categories')) {
+            $post->categories()->sync($request->categories);
+        } else {
+            $post->categories()->detach();
+        }
+
         return redirect()->route('posts.index')
             ->with('success', 'Post updated successfully.');
     }
@@ -192,12 +207,14 @@ class PostController extends Controller
             \Storage::disk('public')->delete($post->ft_image);
         }
 
+        // Detach categories before deleting the post
+        $post->categories()->detach();
+
         $post->delete();
 
         return redirect()->route('posts.index')
             ->with('success', 'Post deleted successfully.');
     }
-
 
     public function publish(Post $post)
     {

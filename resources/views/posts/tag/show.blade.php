@@ -40,8 +40,4 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
 </x-app-layout>
-=======
-</x-app-layout>
->>>>>>> f3d27d2b564292000d192cbc02b99b7939146628

@@ -41,6 +41,22 @@
                             <x-input-error class="mt-2" :messages="$errors->get('ft_image')" />
                         </div>
 
+                        <!-- Category Selection -->
+                        <div class="mb-4">
+                            <x-input-label for="categories" :value="__('Select Categories')" />
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                @foreach($categories as $category)
+                                    <label class="inline-flex items-center">
+                                        <input type="checkbox" name="categories[]" value="{{ $category->id }}"
+                                            class="text-indigo-600 border-gray-300 rounded shadow-sm focus:ring-indigo-500"
+                                            {{ in_array($category->id, old('categories', $post->categories->pluck('id')->toArray())) ? 'checked' : '' }}>
+                                        <span class="ml-2">{{ $category->cat_name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <x-input-error class="mt-2" :messages="$errors->get('categories')" />
+                        </div>
+
                         <div class="mb-4">
                             <label class="inline-flex items-center">
                                 <input type="checkbox" name="is_published"

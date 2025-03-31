@@ -29,6 +29,12 @@
                                             Title
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            Categories
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                                            Tags
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                             Author
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
@@ -57,6 +63,16 @@
                                                     <a href="{{ route('posts.show', $post) }}" class="text-sm font-medium text-gray-900 hover:text-blue-600">
                                                         {{ Str::limit($post->title, 50) }}
                                                     </a>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-700">
+                                                    {{ $post->categories->pluck('cat_name')->implode(', ') ?: 'Uncategorized' }}
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-700">
+                                                    <div class="text-sm text-gray-900"><span>Tags</span></div>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">

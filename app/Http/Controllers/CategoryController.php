@@ -30,15 +30,15 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'cat_name' => 'required|unique:categories,cat_name|max:255',
-            'cat_desc' => 'nullable|string'
+        $validated = $request->validate([
+            'cat_name' => 'required|max:255|unique:categories,cat_name',
+            'cat_desc' => 'nullable|string|max:500'
         ]);
 
         Category::create([
-            'cat_name' => $request->cat_name,
-            'cat_slug' => Str::slug($request->cat_name),
-            'cat_desc' => $request->cat_desc,
+            'cat_name' => $validated['cat_name'],
+            'cat_slug' => Str::slug($validated['cat_name']),
+            'cat_desc' => $validated['cat_desc'] ?? null,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
@@ -65,15 +65,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $request->validate([
+        $validated = $request->validate([
             'cat_name' => 'required|max:255|unique:categories,cat_name,' . $category->id,
-            'cat_desc' => 'nullable|string'
+            'cat_desc' => 'nullable|string|max:500'
         ]);
 
         $category->update([
-            'cat_name' => $request->cat_name,
-            'cat_slug' => Str::slug($request->cat_name),
-            'cat_desc' => $request->cat_desc,
+            'cat_name' => $validated['cat_name'],
+            'cat_slug' => Str::slug($validated['cat_name']),
+            'cat_desc' => $validated['cat_desc'] ?? null,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
@@ -84,8 +84,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        // Prevent deleting if it has posts
+        if ($category->posts()->exists()) {
+            return redirect()->route('categories.index')->with('error', 'Cannot delete category with associated posts.');
+        }
+
         $category->delete();
+
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
-
 }

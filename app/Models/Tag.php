@@ -14,7 +14,8 @@ class Tag extends Model
         'tag_name', 'tag_slug', 'tag_desc'
     ];
 
-    public function categories() : BelongsToMany{
+    public function categories() : BelongsToMany
+    {
         return $this->belongsToMany(Category::class, 'category_tag');
     }
 }

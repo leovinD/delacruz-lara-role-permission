@@ -72,7 +72,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-700">
-                                                    <div class="text-sm text-gray-900"><span>Tags</span></div>
+                                                    <div class="text-sm text-gray-900"><span>Lorem Ip</span></div>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">

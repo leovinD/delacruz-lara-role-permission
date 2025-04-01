@@ -38,7 +38,6 @@
                         {!! $post->content !!}
                     </div>
 
-                    <!-- Display Categories -->
                     <div class="mt-6">
                         <strong>Categories:</strong>
                         @if($post->categories->isNotEmpty())

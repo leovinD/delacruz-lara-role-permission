@@ -218,7 +218,7 @@ class PostController extends Controller
 
     public function publish(Post $post)
     {
-        // $this->authorize('publish', $post);
+        $this->authorize('publish', $post);
 
         $post->update(['published_at' => now()]);
 

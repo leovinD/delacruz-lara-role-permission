@@ -7,6 +7,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,16 +24,26 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
 
+//     Route::resource('posts', PostController::class)->names('posts');
+//     // Roles Routes
+//     Route::resource('roles', RoleController::class)->names('roles');
+//     // Permissions Routes
+//     Route::resource('permissions', PermissionController::class)->names('permissions');
+
+//     Route::resource('tags', TagController::class)->names('tags');
+
+//     Route::resource('categories', CategoryController::class)->names('categories');
+// });
+
+
+Route::group(['middleware' => ['auth', 'role:admin|super_admin|editor']], function () {
     Route::resource('posts', PostController::class)->names('posts');
-    // Roles Routes
+    Route::resource('users', UserController::class)->names('users');
     Route::resource('roles', RoleController::class)->names('roles');
-    // Permissions Routes
     Route::resource('permissions', PermissionController::class)->names('permissions');
-
     Route::resource('tags', TagController::class)->names('tags');
-
     Route::resource('categories', CategoryController::class)->names('categories');
 });
 
